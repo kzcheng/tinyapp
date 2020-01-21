@@ -23,7 +23,12 @@
       </div>
     <!-- The part that allows you to edit URL Pair -->
     <div class="card-footer text-muted">
-      <h3>Edit</h3>
+      <form method="POST" action="/urls/<%= shortURL %>/edit">
+        <h3>Edit</h3>
+        New URL: 
+        <input type="text" name="editedURL" size="100" value="<%=longURL%>">
+        <button class="btn btn-info">Submit</button>
+      </form>
     </div>
   </div>
   <!-- Bootstrap JS -->
