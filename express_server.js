@@ -34,7 +34,7 @@ const userDatabase = {
 };
 
 // -Useful Functions-
-const generateRandomString = function () {
+const generateRandomString = function() {
   const length = 6;
   let result = ``;
   let characters = `ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789`;
@@ -43,6 +43,15 @@ const generateRandomString = function () {
     result += characters.charAt(Math.floor(Math.random() * charactersLength));
   }
   return result;
+};
+
+const checkDuplicatedEmail = function(email) {
+  userDatabase.forEach(element => {
+    if (element.email === email) {
+      return true;
+    }
+  });
+  return false;
 };
 
 // -Get-
@@ -112,8 +121,27 @@ app.post(`/logout`, (req, res) => {
 });
 
 app.post(`/register`, (req, res) => {
-  res.cookie(`email`, req.body.email);
+  // Error Catchers
+  if (!req.body.email || !req.body.password) {
+    res.sendStatus(400);
+  }
+  if (checkDuplicatedEmail) {
 
+  }
+
+
+  const userID = generateRandomString();
+  const user = {
+    id: userID,
+    email: req.body.email,
+    password: req.body.password
+  };
+
+  console.log(user);
+  userDatabase[userID] = user;
+
+
+  res.cookie(`email`, req.body.email);
   res.redirect(`/`);
 });
 
