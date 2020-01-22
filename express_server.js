@@ -45,16 +45,26 @@ app.get(`/hello`, (req, res) => {
 });
 
 app.get(`/urls`, (req, res) => {
-  let templateVars = {urls: urlDatabase};
+  let templateVars = {
+    username: req.cookies["username"],
+    urls: urlDatabase
+  };
   res.render(`urls_index`, templateVars);
 });
 
 app.get(`/urls/new`, (req, res) => {
-  res.render(`urls_new`);
+  let templateVars = {
+    username: req.cookies["username"]
+  };
+  res.render(`urls_new`, templateVars);
 });
 
 app.get(`/urls/:shortURL`, (req, res) => {
-  let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
+  let templateVars = {
+    username: req.cookies["username"],
+    shortURL: req.params.shortURL,
+    longURL: urlDatabase[req.params.shortURL]
+  };
   res.render(`urls_show`, templateVars);
 });
 
@@ -64,11 +74,13 @@ app.get(`/u/:shortURL`, (req, res) => {
 });
 
 // -Post-
-app.post(`/login`,);
+app.post(`/login`, (req, res) => {
+  res.cookie(`username`, req.body.username);
+
+  res.redirect(`/urls`);
+});
 
 app.post(`/urls`, (req, res) => {
-  // console.log(req.body);  // Log the POST request body to the console
-
   const shortURL = generateRandomString();
   urlDatabase[shortURL] = req.body.longURL;
   console.log(urlDatabase);
@@ -90,5 +102,5 @@ app.post(`/urls/:shortURL/edit`, (req, res) => {
 
 // Listen
 app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`);
+  console.log(`Tinyapp listening on port ${PORT}.`);
 });
