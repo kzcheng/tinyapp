@@ -4,9 +4,13 @@ const PORT = 8080;
 // -Imports-
 const express = require("express");
 const bodyParser = require("body-parser");
+const cookieParser = require('cookie-parser');
+
+// -App-
 const app = express();
 app.set("view engine", "ejs"); // Set ejs as the view engine
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(cookieParser());
 
 
 // -Temporary URL Database-
