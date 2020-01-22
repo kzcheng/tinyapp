@@ -20,7 +20,7 @@ const urlDatabase = {
 };
 
 // -Temporary User Database-
-const users = {
+const userDatabase = {
   "userRandomID": {
     id: "userRandomID",
     email: "user@example.com",
@@ -64,14 +64,14 @@ app.get(`/hello`, (req, res) => {
 
 app.get(`/register`, (req, res) => {
   let templateVars = {
-    username: req.cookies["username"]
+    email: req.cookies["email"]
   };
   res.render(`user_register`, templateVars);
 });
 
 app.get(`/urls`, (req, res) => {
   let templateVars = {
-    username: req.cookies["username"],
+    email: req.cookies["email"],
     urls: urlDatabase
   };
   res.render(`urls_index`, templateVars);
@@ -79,14 +79,14 @@ app.get(`/urls`, (req, res) => {
 
 app.get(`/urls/new`, (req, res) => {
   let templateVars = {
-    username: req.cookies["username"]
+    email: req.cookies["email"]
   };
   res.render(`urls_new`, templateVars);
 });
 
 app.get(`/urls/:shortURL`, (req, res) => {
   let templateVars = {
-    username: req.cookies["username"],
+    email: req.cookies["email"],
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL]
   };
@@ -100,19 +100,19 @@ app.get(`/u/:shortURL`, (req, res) => {
 
 // -Post-
 app.post(`/login`, (req, res) => {
-  res.cookie(`username`, req.body.username);
+  res.cookie(`email`, req.body.email);
 
   res.redirect(`/`);
 });
 
 app.post(`/logout`, (req, res) => {
-  res.clearCookie(`username`);
+  res.clearCookie(`email`);
 
   res.redirect(`/`);
 });
 
 app.post(`/register`, (req, res) => {
-  res.cookie(`username`, req.body.username);
+  res.cookie(`email`, req.body.email);
 
   res.redirect(`/`);
 });
