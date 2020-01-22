@@ -19,6 +19,20 @@ const urlDatabase = {
   "9sm5xK": 'http://www.google.com'
 };
 
+// -Temporary User Database-
+const users = {
+  "userRandomID": {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur"
+  },
+  "user2RandomID": {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk"
+  }
+};
+
 // -Useful Functions-
 const generateRandomString = function () {
   const length = 6;
@@ -33,7 +47,11 @@ const generateRandomString = function () {
 
 // -Get-
 app.get(`/`, (req, res) => {
-  res.send(`Hello!`);
+  res.redirect(`/urls`);
+});
+
+app.get(`/index`, (req, res) => {
+  res.redirect(`/urls`);
 });
 
 app.get(`/urls.json`, (req, res) => {
@@ -84,13 +102,20 @@ app.get(`/u/:shortURL`, (req, res) => {
 app.post(`/login`, (req, res) => {
   res.cookie(`username`, req.body.username);
 
-  res.redirect(`/urls`);
+  res.redirect(`/`);
 });
 
 app.post(`/logout`, (req, res) => {
   res.clearCookie(`username`);
 
-  res.redirect(`/urls`);
+  res.redirect(`/`);
+});
+
+app.post(`/register`, (req, res) => {
+  let templateVars = {
+    username: req.cookies["username"]
+  };
+  res.redirect(`/`);
 });
 
 app.post(`/urls`, (req, res) => {
@@ -104,7 +129,7 @@ app.post(`/urls`, (req, res) => {
 app.post(`/urls/:shortURL/delete`, (req, res) => {
   delete urlDatabase[req.params.shortURL];
   console.log(urlDatabase);
-  res.redirect(`/urls`);
+  res.redirect(`/`);
 });
 
 app.post(`/urls/:shortURL/edit`, (req, res) => {
