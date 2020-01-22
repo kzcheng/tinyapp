@@ -9,7 +9,7 @@ const cookieParser = require(`cookie-parser`);
 // -App-
 const app = express();
 app.set(`view engine`, `ejs`); // Set ejs as the view engine
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 
@@ -20,7 +20,7 @@ const urlDatabase = {
 };
 
 // -Useful Functions-
-const generateRandomString = function() {
+const generateRandomString = function () {
   const length = 6;
   let result = ``;
   let characters = `ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789`;
@@ -42,6 +42,13 @@ app.get(`/urls.json`, (req, res) => {
 
 app.get(`/hello`, (req, res) => {
   res.send(`<html><body>Hello <b>World</b></body></html>\n`);
+});
+
+app.get(`/register`, (req, res) => {
+  let templateVars = {
+    username: req.cookies["username"]
+  };
+  res.render(`user_register`, templateVars);
 });
 
 app.get(`/urls`, (req, res) => {
@@ -82,7 +89,7 @@ app.post(`/login`, (req, res) => {
 
 app.post(`/logout`, (req, res) => {
   res.clearCookie(`username`);
-  
+
   res.redirect(`/urls`);
 });
 
