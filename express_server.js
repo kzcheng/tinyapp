@@ -129,12 +129,14 @@ app.post(`/login`, (req, res) => {
         res.redirect(`/`);
       } else {
         // Password is incorrect
-        res.redirect(`/login`);
+        res.sendStatus(403);
+        return;
       }
     }
   }
   // Cannot find email
-  res.redirect(`/login`);
+  res.sendStatus(403);
+  return;
 });
 
 app.post(`/logout`, (req, res) => {
