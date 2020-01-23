@@ -9,7 +9,7 @@ const cookieParser = require(`cookie-parser`);
 // -App-
 const app = express();
 app.set(`view engine`, `ejs`); // Set ejs as the view engine
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 
@@ -17,6 +17,20 @@ app.use(cookieParser());
 const urlDatabase = {
   "b2xVn2": 'http://www.lighthouselabs.ca',
   "9sm5xK": 'http://www.google.com'
+};
+
+// -Temporary User Database-
+const userDatabase = {
+  "userRandomID": {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur"
+  },
+  "user2RandomID": {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk"
+  }
 };
 
 // -Useful Functions-
@@ -31,9 +45,22 @@ const generateRandomString = function() {
   return result;
 };
 
+const checkDuplicatedEmail = function(email) {
+  for (const userID in userDatabase) {
+    if (userDatabase[userID].email === email) {
+      return true;
+    }
+  }
+  return false;
+};
+
 // -Get-
 app.get(`/`, (req, res) => {
-  res.send(`Hello!`);
+  res.redirect(`/urls`);
+});
+
+app.get(`/index`, (req, res) => {
+  res.redirect(`/urls`);
 });
 
 app.get(`/urls.json`, (req, res) => {
@@ -44,9 +71,23 @@ app.get(`/hello`, (req, res) => {
   res.send(`<html><body>Hello <b>World</b></body></html>\n`);
 });
 
+app.get(`/login`, (req, res) => {
+  let templateVars = {
+    user: userDatabase[req.cookies["user_id"]]
+  };
+  res.render(`user_login`, templateVars);
+});
+
+app.get(`/register`, (req, res) => {
+  let templateVars = {
+    user: userDatabase[req.cookies["user_id"]]
+  };
+  res.render(`user_register`, templateVars);
+});
+
 app.get(`/urls`, (req, res) => {
   let templateVars = {
-    username: req.cookies["username"],
+    user: userDatabase[req.cookies["user_id"]],
     urls: urlDatabase
   };
   res.render(`urls_index`, templateVars);
@@ -54,14 +95,14 @@ app.get(`/urls`, (req, res) => {
 
 app.get(`/urls/new`, (req, res) => {
   let templateVars = {
-    username: req.cookies["username"]
+    user: userDatabase[req.cookies["user_id"]]
   };
   res.render(`urls_new`, templateVars);
 });
 
 app.get(`/urls/:shortURL`, (req, res) => {
   let templateVars = {
-    username: req.cookies["username"],
+    user: userDatabase[req.cookies["user_id"]],
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL]
   };
@@ -75,15 +116,57 @@ app.get(`/u/:shortURL`, (req, res) => {
 
 // -Post-
 app.post(`/login`, (req, res) => {
-  res.cookie(`username`, req.body.username);
-
-  res.redirect(`/urls`);
+  if (!req.body.email || !req.body.password) {
+    res.sendStatus(400);
+    return;
+  }
+  
+  for (const userID in userDatabase) {
+    if (userDatabase[userID].email === req.body.email) {
+      if (userDatabase[userID].password === req.body.password) {
+        // Login success
+        res.cookie(`user_id`, userID);
+        res.redirect(`/`);
+      } else {
+        // Password is incorrect
+        res.sendStatus(403);
+        return;
+      }
+    }
+  }
+  // Cannot find email
+  res.sendStatus(403);
+  return;
 });
 
 app.post(`/logout`, (req, res) => {
-  res.clearCookie(`username`);
-  
-  res.redirect(`/urls`);
+  res.clearCookie(`user_id`);
+
+  res.redirect(`/`);
+});
+
+app.post(`/register`, (req, res) => {
+  // Error Catchers
+  if (!req.body.email || !req.body.password) {
+    res.sendStatus(400);
+    return;
+  } else if (checkDuplicatedEmail(req.body.email)) {
+    res.sendStatus(400);
+    return;
+  }
+
+  const userID = generateRandomString();
+  const user = {
+    id: userID,
+    email: req.body.email,
+    password: req.body.password
+  };
+
+  console.log(user);
+  userDatabase[userID] = user;
+
+  res.cookie(`user_id`, userID);
+  res.redirect(`/`);
 });
 
 app.post(`/urls`, (req, res) => {
@@ -97,7 +180,7 @@ app.post(`/urls`, (req, res) => {
 app.post(`/urls/:shortURL/delete`, (req, res) => {
   delete urlDatabase[req.params.shortURL];
   console.log(urlDatabase);
-  res.redirect(`/urls`);
+  res.redirect(`/`);
 });
 
 app.post(`/urls/:shortURL/edit`, (req, res) => {

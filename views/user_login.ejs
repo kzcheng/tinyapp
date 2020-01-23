@@ -2,36 +2,29 @@
 <html lang="en">
 
 <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
     integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
-  <title>URL - TinyApp Example</title>
+  <title>TinyApp</title>
 </head>
 
 <body>
   <%- include('partials/_header.ejs') %>
+  <main style="margin: 1em;">
 
-  <!-- The Part which shows you the details of current URL Pair -->
-  <div class="card text-center">
-    <div class="card-header"></div>
-    <div class="card-body">
-      <h5 class="card-title">TinyURL for: <%= longURL %></h5>
-      <p class="card-text">Short URL:
-        <a href=<%=`/u/${shortURL}`%>>
-          <%= shortURL %>
-        </a>
-      </p>
-    </div>
-    <!-- The part that allows you to edit URL Pair -->
-    <div class="card-footer text-muted">
-      <form method="POST" action="/urls/<%= shortURL %>/edit">
-        <h3>Edit</h3>
-        New URL:
-        <input type="text" name="editedURL" size="100" value="<%=longURL%>">
-        <button class="btn btn-info">Submit</button>
-      </form>
-    </div>
-  </div>
+    <form method="POST" action="/login">
+      <h3>Login</h3>
+      <h6>Email</h6>
+      <input class="form-control" type="email" name="email" placeholder="Example@internet.com"
+        style="width: 300px;"><br>
+      <h6>Password</h6>
+      <input class="form-control" type="password" name="password" placeholder="Password" style="width: 300px;"><br>
+      <button class=" btn btn-info">Login</button>
+    </form>
+  </main>
 
   <!-- Bootstrap JS -->
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
