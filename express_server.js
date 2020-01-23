@@ -46,11 +46,11 @@ const generateRandomString = function() {
 };
 
 const checkDuplicatedEmail = function(email) {
-  userDatabase.forEach(element => {
-    if (element.email === email) {
+  for (const userID in userDatabase) {
+    if (userDatabase[userID].email === email) {
       return true;
     }
-  });
+  }
   return false;
 };
 
@@ -73,14 +73,14 @@ app.get(`/hello`, (req, res) => {
 
 app.get(`/register`, (req, res) => {
   let templateVars = {
-    email: req.cookies["email"]
+    user: userDatabase[req.cookies["user_id"]]
   };
   res.render(`user_register`, templateVars);
 });
 
 app.get(`/urls`, (req, res) => {
   let templateVars = {
-    email: req.cookies["email"],
+    user: userDatabase[req.cookies["user_id"]],
     urls: urlDatabase
   };
   res.render(`urls_index`, templateVars);
@@ -88,14 +88,14 @@ app.get(`/urls`, (req, res) => {
 
 app.get(`/urls/new`, (req, res) => {
   let templateVars = {
-    email: req.cookies["email"]
+    user: userDatabase[req.cookies["user_id"]]
   };
   res.render(`urls_new`, templateVars);
 });
 
 app.get(`/urls/:shortURL`, (req, res) => {
   let templateVars = {
-    email: req.cookies["email"],
+    user: userDatabase[req.cookies["user_id"]],
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL]
   };
@@ -109,13 +109,13 @@ app.get(`/u/:shortURL`, (req, res) => {
 
 // -Post-
 app.post(`/login`, (req, res) => {
-  res.cookie(`email`, req.body.email);
+  // res.cookie(`user_id`, req.body.email);
 
   res.redirect(`/`);
 });
 
 app.post(`/logout`, (req, res) => {
-  res.clearCookie(`email`);
+  res.clearCookie(`user_id`);
 
   res.redirect(`/`);
 });
@@ -124,11 +124,11 @@ app.post(`/register`, (req, res) => {
   // Error Catchers
   if (!req.body.email || !req.body.password) {
     res.sendStatus(400);
+    return;
+  } else if (checkDuplicatedEmail(req.body.email)) {
+    res.sendStatus(400);
+    return;
   }
-  if (checkDuplicatedEmail) {
-
-  }
-
 
   const userID = generateRandomString();
   const user = {
@@ -140,8 +140,7 @@ app.post(`/register`, (req, res) => {
   console.log(user);
   userDatabase[userID] = user;
 
-
-  res.cookie(`email`, req.body.email);
+  res.cookie(`user_id`, user.id);
   res.redirect(`/`);
 });
 
