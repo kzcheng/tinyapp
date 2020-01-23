@@ -71,6 +71,13 @@ app.get(`/hello`, (req, res) => {
   res.send(`<html><body>Hello <b>World</b></body></html>\n`);
 });
 
+app.get(`/login`, (req, res) => {
+  let templateVars = {
+    user: userDatabase[req.cookies["user_id"]]
+  };
+  res.render(`user_login`, templateVars);
+});
+
 app.get(`/register`, (req, res) => {
   let templateVars = {
     user: userDatabase[req.cookies["user_id"]]
@@ -109,9 +116,25 @@ app.get(`/u/:shortURL`, (req, res) => {
 
 // -Post-
 app.post(`/login`, (req, res) => {
-  // res.cookie(`user_id`, req.body.email);
-
-  res.redirect(`/`);
+  if (!req.body.email || !req.body.password) {
+    res.sendStatus(400);
+    return;
+  }
+  
+  for (const userID in userDatabase) {
+    if (userDatabase[userID].email === req.body.email) {
+      if (userDatabase[userID].password === req.body.password) {
+        // Login success
+        res.cookie(`user_id`, userID);
+        res.redirect(`/`);
+      } else {
+        // Password is incorrect
+        res.redirect(`/login`);
+      }
+    }
+  }
+  // Cannot find email
+  res.redirect(`/login`);
 });
 
 app.post(`/logout`, (req, res) => {
@@ -140,7 +163,7 @@ app.post(`/register`, (req, res) => {
   console.log(user);
   userDatabase[userID] = user;
 
-  res.cookie(`user_id`, user.id);
+  res.cookie(`user_id`, userID);
   res.redirect(`/`);
 });
 
