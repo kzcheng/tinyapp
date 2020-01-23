@@ -94,6 +94,10 @@ app.get(`/urls`, (req, res) => {
 });
 
 app.get(`/urls/new`, (req, res) => {
+  if (!req.cookies["user_id"]) {
+    res.redirect(`/login`);
+  }
+  
   let templateVars = {
     user: userDatabase[req.cookies["user_id"]]
   };
